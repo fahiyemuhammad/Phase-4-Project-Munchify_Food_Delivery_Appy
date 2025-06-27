@@ -1,0 +1,102 @@
+.edit-account-container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 16px;
+  background-color: #ffffff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.edit-account-container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.edit-form label {
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 4px;
+}
+
+.edit-form input {
+  padding: 10px 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.edit-form input:focus {
+  border-color: #007bff;
+}
+
+.error {
+  font-size: 0.85rem;
+  color: #d9534f;
+  margin-top: -10px;
+}
+
+.password-toggle-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle-wrapper input {
+  flex: 1;
+}
+
+.toggle-password {
+  margin-left: 10px;
+  background-color: transparent;
+  border: none;
+  color: #007bff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.toggle-password:hover {
+  color: #0056b3;
+}
+
+.edit-form button[type="submit"] {
+  margin-top: 15px;
+  background-color: tomato;
+  color: white;
+  padding: 12px;
+  border: none;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.edit-form button[type="submit"]:hover {
+  background-color: rgb(223, 117, 99);
+}
+
+.delete-btn {
+  margin-top: 25px;
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: none;
+  background-color: red;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.delete-btn:hover {
+  background-color: rgb(228, 49, 49);
+}

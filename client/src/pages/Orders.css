@@ -1,0 +1,110 @@
+.orders-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.orders-title {
+  font-size: 2rem;
+  color: #fa734a;
+}
+
+.account-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.account-buttons button {
+  width: 150px;              
+  height: 44px;               
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-btn {
+  background-color: #f39a25;
+  color: white;
+  margin-top: 25px;
+  margin-right: 10px;
+}
+
+.edit-btn:hover {
+  background-color: #eba91c;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+
+.orders-message {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-top: 40px;
+  color: #777;
+}
+
+.orders-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.order-card {
+  background: linear-gradient(to bottom right, #fff, #f9f9f9);
+  padding: 20px 24px;
+  border-radius: 16px;
+  border-top: 5px solid #ff4d4f;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.order-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.order-card p,
+.order-card ul li {
+  margin: 6px 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.order-card strong {
+  color: #ff4d4f;
+}
+
+.order-card ul {
+  margin: 10px 0 5px 0;
+  padding-left: 20px;
+}
+
+.order-card ul li::before {
+  margin-right: 6px;
+  font-size: 0.9rem;
+}
