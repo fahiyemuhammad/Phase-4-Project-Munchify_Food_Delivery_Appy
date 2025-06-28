@@ -8,8 +8,14 @@ import withReactContent from "sweetalert2-react-content";
 const MySwal = withReactContent(Swal);
 
 function PlaceOrder() {
-  const { getTotalCartAmount, cartItems, food_list, clearCart } =
-    useContext(StoreContext);
+  const {
+    getTotalCartAmount,
+    cartItems,
+    food_list,
+    clearCart,
+    setOrderPlaced, // ✅ NEW: signal context for navbar refresh
+  } = useContext(StoreContext);
+
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -93,6 +99,8 @@ function PlaceOrder() {
 
       if (res.ok) {
         clearCart();
+        setOrderPlaced(true); // ✅ 🔥 Trigger Navbar to refresh order status
+
         setFormData({
           firstName: "",
           lastName: "",

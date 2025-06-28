@@ -5,17 +5,75 @@ import { Link } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
 import Swal from "sweetalert2";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 function Navbar({ setShowLogin, isLoggedIn, setIsLoggedIn }) {
   const [menu, setmenu] = useState("menu");
   const [username, setUsername] = useState("");
-  const { getTotalCartAmount } = useContext(StoreContext);
+  const [hasOrders, setHasOrders] = useState(false);
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
+  const { getTotalCartAmount, orderPlaced, setOrderPlaced } =
+    useContext(StoreContext);
+
+  // Fetch username from token (fallback if localStorage missing)
   useEffect(() => {
-    const storedUser = localStorage.getItem("username");
-    if (storedUser) {
-      setUsername(storedUser);
+    const localUsername = localStorage.getItem("username");
+    const token = localStorage.getItem("token");
+
+    if (localUsername) {
+      setUsername(localUsername);
+    } else if (token) {
+      fetch(`${API_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.username) {
+            setUsername(data.username);
+            localStorage.setItem("username", data.username);
+          }
+        })
+        .catch(() => {});
     }
   }, [isLoggedIn]);
+
+  // Fetch orders
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    setLoadingOrders(true);
+
+    fetch(`${API_URL}/orders`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          console.warn("Token expired. Logging out.");
+          localStorage.removeItem("token");
+          localStorage.removeItem("username");
+          setIsLoggedIn(false);
+          return [];
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setHasOrders(Array.isArray(data) && data.length > 0);
+      })
+      .catch((err) => {
+        console.error("Error fetching orders:", err);
+        setHasOrders(false);
+      })
+      .finally(() => {
+        setLoadingOrders(false);
+        setOrderPlaced(false);
+      });
+  }, [isLoggedIn, getTotalCartAmount(), orderPlaced]);
 
   const handleLogout = () => {
     Swal.fire({
@@ -34,6 +92,14 @@ function Navbar({ setShowLogin, isLoggedIn, setIsLoggedIn }) {
         setUsername("");
         Swal.fire("Logged out!", "You have been logged out.", "success");
       }
+    });
+  };
+
+  const handleBlockedClick = () => {
+    Swal.fire({
+      icon: "info",
+      title: "Access Denied",
+      text: "You need to place at least one order to view the orders section.",
     });
   };
 
@@ -84,12 +150,30 @@ function Navbar({ setShowLogin, isLoggedIn, setIsLoggedIn }) {
 
         {isLoggedIn ? (
           <div className="user-info">
-            <Link to="/orders" className="username-link">
-              <img className="profile_icon" src={assets.profile_icon} alt="" />
+            <Link to="/account" className="username-link">
+              <img
+                className="profile_icon"
+                src={assets.profile_icon}
+                alt="Profile"
+              />
             </Link>
-            <Link to="/orders" className="username-link">
-              <span className="username"> Hello {username}</span>
-            </Link>
+
+            {loadingOrders ? (
+              <span className="username loading-spinner">Checking...</span>
+            ) : hasOrders ? (
+              <Link to="/orders" className="username-link">
+                <span className="username"> Hello {username}</span>
+              </Link>
+            ) : (
+              <div
+                className="username-link blocked"
+                onClick={handleBlockedClick}
+                title="Place an order to view your orders"
+              >
+                <span className="username"> Hello {username}</span>
+              </div>
+            )}
+
             <button className="logout-btn" onClick={handleLogout}>
               Logout
             </button>

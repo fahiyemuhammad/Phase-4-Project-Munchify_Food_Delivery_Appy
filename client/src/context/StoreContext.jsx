@@ -5,6 +5,7 @@ export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
+  const [orderPlaced, setOrderPlaced] = useState(false); // ✅ added to track order placement
 
   const addToCart = (itemId) => {
     setCartItems((prev) => ({
@@ -43,6 +44,8 @@ const StoreContextProvider = (props) => {
         removeFromCart,
         getTotalCartAmount,
         clearCart,
+        orderPlaced, // ✅ make available in context
+        setOrderPlaced, // ✅ used to trigger refresh in navbar
       }}
     >
       {props.children}

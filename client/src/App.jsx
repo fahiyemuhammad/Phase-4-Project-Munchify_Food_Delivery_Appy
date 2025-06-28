@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Toastify styles
 import Orders from "./pages/Orders";
 import EditAccount from "./pages/EditAccount";
+import AccountPage from "./pages/AccountPage";
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -41,6 +42,10 @@ const App = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/order" element={<PlaceOrder />} />
           <Route path="/orders" element={<Orders />} />
+          <Route
+            path="/account"
+            element={<AccountPage setIsLoggedIn={setIsLoggedIn} />}
+          />
           <Route
             path="/edit-account"
             element={<EditAccount setIsLoggedIn={setIsLoggedIn} />}
