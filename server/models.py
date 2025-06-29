@@ -18,10 +18,9 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, nullable=False, unique=True)
     email = db.Column(db.String, nullable=False, unique=True)
-    _password_hash = db.Column(db.String, nullable=False)
+    password_hash = db.Column(db.String, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
-    # ✅ Relationship to orders
     orders = db.relationship(
         'Order',
         backref='user',
@@ -37,10 +36,10 @@ class User(db.Model):
     def password(self, plain_password):
         if len(plain_password) < 6:
             raise ValueError("Password must be at least 6 characters long.")
-        self._password_hash = bcrypt.generate_password_hash(plain_password).decode('utf-8')
+        self.password_hash = bcrypt.generate_password_hash(plain_password).decode('utf-8')
 
     def check_password(self, plain_password):
-        return bcrypt.check_password_hash(self._password_hash, plain_password)
+        return bcrypt.check_password_hash(self.password_hash, plain_password)
 
     @validates('email')
     def validate_email(self, key, email_address):
@@ -49,8 +48,6 @@ class User(db.Model):
             return valid.email
         except EmailNotValidError:
             raise ValueError("Invalid email address")
-
-
 class MenuItem(db.Model):
     __tablename__ = 'menu_items'
 
