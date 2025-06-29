@@ -68,3 +68,11 @@
 .food-item-image-counter img{
     width: 30px;
 }
+/* Start hidden */
+.food-item.hidden {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 6s ease-out, transform 10s ease-out;
+  animation: fadeIn 7s;
+}
+

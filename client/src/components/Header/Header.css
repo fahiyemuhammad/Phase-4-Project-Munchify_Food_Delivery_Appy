@@ -21,6 +21,7 @@
     font-weight: 500;
     color: white;
     font-size: max(4.5vw,22px);
+    text-align: left;
 }
 .header-contents p{
     color: white;
@@ -43,12 +44,18 @@
 @media (max-width:750px){
     .header-contents{
         max-width: 65%;
+        max-height: 100%;
     }
     .header-contents p{
         display: none;
     }
     .header-contents button{
         padding: 2vw 4vw;
+        margin-bottom: 80px;
+    }
+    .header-contents h2{
+        font-size: small;
+        margin-top: 20px;
     }
 }
 .view-menu:hover{

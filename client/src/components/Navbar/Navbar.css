@@ -1,15 +1,14 @@
 .navbar{
-    padding: 20px, 0px;
+    /* padding: 10px, 0px; */
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.navbar .logo{
-    width: 150px;
-}
+
 .logo-text{
     color: rgb(252, 83, 53);
+    margin-top: 30px;
     font-size: xx-large;
 }
 .navbar-menu{
@@ -17,7 +16,7 @@
     list-style: none;
     gap: 50px;
     color: #49557E;
-    font-size: 18px;
+    font-size: 20px;
 }
 
 .navbar-right{
