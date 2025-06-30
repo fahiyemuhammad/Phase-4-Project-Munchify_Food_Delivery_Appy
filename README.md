@@ -1,12 +1,12 @@
-# 🍔 Munchify - Food Delivery App
+# Munchify - Food Delivery App
 
-**Munchify** is a full-stack food delivery web application built with **React** (frontend) and **Flask + PostgreSQL** (backend). It allows users to sign up, browse food items, add to cart, place orders, and track their order history. Admin users can manage menu items as well.
+**Munchify** is a full-stack food delivery web application built with **React** (frontend) and **Flask + PostgreSQL** (backend). It allows users to sign up, browse food items, add to cart, place orders, and track their order history.
 
 ---
 
 ## Features
 
-### 👨‍🍳 For Users
+### For Users
 
 - Sign up and log in with JWT authentication
 - Browse available food items with images and descriptions
@@ -15,14 +15,7 @@
 - Receive order confirmation email via Flask-Mail
 - View order history (with order totals and delivery info)
 
-### 🔐 For Admin (Optional Future Feature)
-
-- Add, update, or delete menu items
-- View all orders from all users
-
----
-
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 
@@ -41,11 +34,11 @@
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 project-root/
 │
-├── frontend/
+├── client/
 │ └── src/
 │ ├── components/
 │ ├── context/StoreContext.js
@@ -68,23 +61,22 @@ Edit
 
 ---
 
-## ⚙️ Setup Instructions
+## Setup Instructions
 
-### 📌 Requirements
+### Requirements
 
-- Node.js (v16+)
 - Python 3.10+
 - PostgreSQL
 - Pipenv or virtualenv
 
 ---
 
-### 🔧 Backend Setup (Flask + PostgreSQL)
+### Backend Setup (Flask + PostgreSQL)
 
 1. **Clone the repo** and navigate to the backend folder:
 
    ```bash
-   git clone https://github.com/your-username/munchify.git
+   git clone https://github.com/fahiyemuhammad/munchify.git
    cd munchify/server
    Create a virtual environment and install dependencies:
    ```
@@ -161,7 +153,7 @@ js
 Copy
 Edit
 Authorization: `Bearer ${token}`
-📦 API Endpoints (Sample)
+API Endpoints (Sample)
 POST /auth/register
 Registers a new user
 
@@ -188,7 +180,7 @@ Your order was successfully placed!
 You'll pay $32.00 on delivery.
 
 Thanks for shopping with us!
-💡 Future Improvements
+Future Improvements
 Admin dashboard for managing items
 
 Mobile responsive design
@@ -213,4 +205,3 @@ Order history page
 🙌 Author
 Fahiye Muhammad
 Front-End & Back-End Developer
-LinkedIn | GitHub
