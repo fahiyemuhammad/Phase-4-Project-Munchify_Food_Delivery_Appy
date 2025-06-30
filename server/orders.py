@@ -52,7 +52,7 @@ def create_order():
                     f"Hi {first_name},\n\n"
                     f"Thanks for placing your order with Munchify!\n\n"
                     f"Total: ${total}\n\n"
-                    f"You'll pay on delivery. We'll reach out if we need anything else.\n\n"
+                    f"You'll pay on delivery. We'll reach out if there's anything else needed.\n\n"
                     f"Feel free to contact us: +254-754-354-649 \n\n"
                     f"Cheers,\nThe Munchify Team"
                 )

@@ -63,7 +63,6 @@ class Order(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    # ✅ ForeignKey link to User
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     contact_info = db.Column(JSON, nullable=False)

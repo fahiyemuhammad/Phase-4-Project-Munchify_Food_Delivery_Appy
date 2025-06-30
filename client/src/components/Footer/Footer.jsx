@@ -62,7 +62,7 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* ✅ Map Section */}
+      {/*  Map Section */}
       <div className="footer-map">
         <iframe
           title="Munchify Map"

@@ -23,10 +23,10 @@ const App = () => {
 
   return (
     <>
-      {/* ✅ Global Toast Notification Container */}
+      {/*  Global Toast Notification Container */}
       <ToastContainer position="top-center" autoClose={2000} />
 
-      {/* ✅ Conditional Login Form */}
+      {/*  Conditional Login Form */}
       {showLogin && (
         <LoginPopup setShowLogin={setShowLogin} setIsLoggedIn={setIsLoggedIn} />
       )}

@@ -10,7 +10,7 @@ const LoginPopup = ({ setShowLogin, setIsLoggedIn }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // 🔄 Reset all form fields and state
+  //  Reset all form fields and state
   const resetForm = () => {
     setUsername("");
     setEmail("");
@@ -44,13 +44,13 @@ const LoginPopup = ({ setShowLogin, setIsLoggedIn }) => {
         localStorage.setItem("token", data.access_token);
         localStorage.setItem("username", data.username);
         setIsLoggedIn(true);
-        setShowLogin(false); // ✅ Close popup
+        setShowLogin(false); //  Close popup
         toast.success("Login successful!");
-        resetForm(); // ✅ Clear form after login
+        resetForm(); //  Clear form after login
       } else if (res.ok && currentState === "Sign Up") {
         toast.success("Account created! Please log in.");
         setCurrentState("Login");
-        resetForm(); // ✅ Clear form after signup
+        resetForm(); //  Clear form after signup
       } else {
         toast.error(data.error || "Authentication failed");
       }
@@ -70,7 +70,7 @@ const LoginPopup = ({ setShowLogin, setIsLoggedIn }) => {
             <img
               onClick={() => {
                 setShowLogin(false);
-                resetForm(); // ✅ Clear form when popup is closed
+                resetForm(); //  Clear form when popup is closed
               }}
               src={assets.cross_icon}
               alt="close"

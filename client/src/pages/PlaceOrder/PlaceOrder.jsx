@@ -13,7 +13,7 @@ function PlaceOrder() {
     cartItems,
     food_list,
     clearCart,
-    setOrderPlaced, // ✅ NEW: signal context for navbar refresh
+    setOrderPlaced, //  NEW: signal context for navbar refresh
   } = useContext(StoreContext);
 
   const navigate = useNavigate();
@@ -99,7 +99,7 @@ function PlaceOrder() {
 
       if (res.ok) {
         clearCart();
-        setOrderPlaced(true); // ✅ 🔥 Trigger Navbar to refresh order status
+        setOrderPlaced(true); // Trigger Navbar to refresh order status
 
         setFormData({
           firstName: "",

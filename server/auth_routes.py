@@ -10,7 +10,7 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 @auth_bp.route('/register', methods=['POST', 'OPTIONS'])
 def register():
     if request.method == 'OPTIONS':
-        return '', 200  # ✅ Preflight CORS support
+        return '', 200  #  Preflight CORS support
 
     data = request.get_json()
     username = data.get('username')
@@ -33,7 +33,7 @@ def register():
 @auth_bp.route('/login', methods=['POST', 'OPTIONS'])
 def login():
     if request.method == 'OPTIONS':
-        return '', 200  # ✅ Preflight CORS support
+        return '', 200  #  Preflight CORS support
 
     data = request.get_json()
     email = data.get('email')
@@ -66,7 +66,7 @@ def get_current_user():
 @jwt_required()
 def update_user():
     if request.method == 'OPTIONS':
-        return '', 200  # ✅ Preflight CORS support for PATCH
+        return '', 200  #  Preflight CORS support for PATCH
 
     user_id = get_jwt_identity()
     user = User.query.get(user_id)

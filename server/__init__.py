@@ -10,14 +10,14 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    # ✅ Initialize extensions
+    #  Initialize extensions
     db.init_app(app)
     bcrypt.init_app(app)
     jwt.init_app(app)
     mail.init_app(app)
     Migrate(app, db)
 
-    # ✅ CORS: Allow frontend at localhost:5173 with all needed methods
+    #  CORS: Allow frontend at localhost:5173 with all needed methods
     CORS(
         app,
         origins=["http://localhost:5173"],
@@ -26,7 +26,7 @@ def create_app():
         allow_headers=["Content-Type", "Authorization"]
     )
 
-    # ✅ Register Blueprints
+    #  Register Blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(orders_bp)
 

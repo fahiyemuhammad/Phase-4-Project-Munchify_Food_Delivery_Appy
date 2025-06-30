@@ -17,7 +17,7 @@ def create_app():
     db.init_app(app)
     Migrate(app, db)
 
-    # ✅ Allow CORS from both local and deployed frontends
+    #  Allow CORS from both local and deployed frontends
     CORS(app, supports_credentials=True, origins=[
         "http://localhost:5173",
         "https://munchify-frontend.onrender.com"
