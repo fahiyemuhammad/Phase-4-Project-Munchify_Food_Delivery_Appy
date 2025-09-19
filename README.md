@@ -89,56 +89,38 @@ pipenv shell
 Set environment variables (or create a .env file):
 
 ini
-Copy
-Edit
-FLASK_APP=app.py
-FLASK_ENV=development
-DATABASE_URL=postgresql://username:password@localhost:5432/munchify_db
-SECRET_KEY=your-secret
-JWT_SECRET_KEY=your-jwt-secret
-MAIL_SERVER=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=your-email@gmail.com
-MAIL_PASSWORD=your-app-password
-MAIL_USE_TLS=True
-Initialize the database:
+
 
 bash
-Copy
-Edit
+
 flask db init
 flask db migrate
 flask db upgrade
 Seed sample menu items (optional)
 
 bash
-Copy
-Edit
+
 flask seed
 Run the server:
 
 bash
-Copy
-Edit
+
 flask run
 🌐 Frontend Setup (React)
 In another terminal, navigate to the frontend/ folder:
 
 bash
-Copy
-Edit
+
 cd munchify/frontend
 Install dependencies:
 
 bash
-Copy
-Edit
+
 npm install
 Start the React app:
 
 bash
-Copy
-Edit
+
 npm start
 The app will open at http://localhost:3000
 
@@ -150,8 +132,7 @@ Protected routes require a valid token (e.g., placing orders, viewing history).
 Token is attached in headers via:
 
 js
-Copy
-Edit
+
 Authorization: `Bearer ${token}`
 API Endpoints (Sample)
 POST /auth/register
@@ -170,8 +151,7 @@ Returns user's order history (token required)
 When an order is placed, the user receives an email like:
 
 vbnet
-Copy
-Edit
+
 Subject: Your Order Confirmation
 
 Hi Fahiye,
