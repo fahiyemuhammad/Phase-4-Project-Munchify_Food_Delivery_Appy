@@ -3,9 +3,9 @@ from flask_restful import Api
 from flask_cors import CORS
 from flask_migrate import Migrate
 from config import Config
-from server.extensions import db
-from server.auth_routes import auth_bp
-from server.orders import orders_bp
+from extensions import db
+from auth_routes import auth_bp
+from orders import orders_bp
 from dotenv import load_dotenv
 
 load_dotenv()
