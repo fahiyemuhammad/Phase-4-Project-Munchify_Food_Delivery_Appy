@@ -1,41 +1,34 @@
 import os
-from urllib.parse import urlparse
 
 class Config:
-    # PostgreSQL connection - FIXED for Render PostgreSQL SSL
-    database_url = os.getenv("DATABASE_URL")
+    # NUCLEAR OPTION: Hardcoded SSL fix for Render
+    # Get DATABASE_URL from environment
+    raw_url = os.getenv("DATABASE_URL")
     
-    if database_url:
-        # Parse the URL to handle it properly
-        parsed_url = urlparse(database_url)
+    if raw_url:
+        # Step 1: Print what we got
+        print(f"🚀 RAW DATABASE_URL: {raw_url}")
         
-        # Force SSL mode for Render PostgreSQL
-        if "sslmode" not in parsed_url.query:
-            # Append sslmode=require if not already present
-            query = f"{parsed_url.query}&sslmode=require" if parsed_url.query else "sslmode=require"
-            # Reconstruct the URL with SSL requirement
-            SQLALCHEMY_DATABASE_URI = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}?{query}"
-        else:
-            SQLALCHEMY_DATABASE_URI = database_url
-            
-        # Ensure we're using psycopg2 driver (Render's default)
-        if SQLALCHEMY_DATABASE_URI.startswith("postgresql://"):
-            SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace(
-                "postgresql://", "postgresql+psycopg2://", 1
-            )
+        # Step 2: FORCE sslmode=require NO MATTER WHAT
+        # Remove any existing query parameters
+        base_url = raw_url.split('?')[0] if '?' in raw_url else raw_url
+        
+        # Step 3: Use psycopg2 driver
+        if base_url.startswith("postgresql://"):
+            base_url = base_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+        
+        # Step 4: ALWAYS add sslmode=require
+        SQLALCHEMY_DATABASE_URI = f"{base_url}?sslmode=require"
+        
+        print(f"🎯 FORCED DATABASE_URL: {SQLALCHEMY_DATABASE_URI}")
     else:
-        # Fallback for local development
+        # Local development
         SQLALCHEMY_DATABASE_URI = "postgresql://fahiye:strongpassword123@localhost:5432/food_order_db"
+        print("🏠 Using local database")
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-    # JWT secret
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key")
-
-    # Allow credentials for cross-origin
     CORS_SUPPORTS_CREDENTIALS = True
-
-    # Optional: Enable debug in dev
     DEBUG = True
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587
