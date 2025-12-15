@@ -17,13 +17,18 @@ def create_app():
     db.init_app(app)
     Migrate(app, db)
 
-    #  Allow CORS from both local and deployed frontends
-    CORS(app, supports_credentials=True, origins=[
-        "http://localhost:5173",
-        "https://munchify-frontend.onrender.com", 
-        "https://phase-4-project-munchify-food-deliv-two.vercel.app"
-
-    ])
+    # Allow CORS from both local and deployed frontends, including preflight
+    CORS(
+        app,
+        supports_credentials=True,
+        origins=[
+            "http://localhost:5173",
+            "https://munchify-frontend.onrender.com",
+            "https://phase-4-project-munchify-food-deliv-two.vercel.app"
+        ],
+        allow_headers="*",
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    )
 
     api = Api(app)
 
