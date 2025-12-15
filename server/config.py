@@ -1,11 +1,32 @@
 import os
+from urllib.parse import urlparse
 
 class Config:
-    # PostgreSQL connection
-    SQLALCHEMY_DATABASE_URI = os.getenv(
-        "DATABASE_URL", 
-        "postgresql://fahiye:strongpassword123@localhost:5432/food_order_db"
-    )
+    # PostgreSQL connection - FIXED for Render PostgreSQL SSL
+    database_url = os.getenv("DATABASE_URL")
+    
+    if database_url:
+        # Parse the URL to handle it properly
+        parsed_url = urlparse(database_url)
+        
+        # Force SSL mode for Render PostgreSQL
+        if "sslmode" not in parsed_url.query:
+            # Append sslmode=require if not already present
+            query = f"{parsed_url.query}&sslmode=require" if parsed_url.query else "sslmode=require"
+            # Reconstruct the URL with SSL requirement
+            SQLALCHEMY_DATABASE_URI = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}?{query}"
+        else:
+            SQLALCHEMY_DATABASE_URI = database_url
+            
+        # Ensure we're using psycopg2 driver (Render's default)
+        if SQLALCHEMY_DATABASE_URI.startswith("postgresql://"):
+            SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace(
+                "postgresql://", "postgresql+psycopg2://", 1
+            )
+    else:
+        # Fallback for local development
+        SQLALCHEMY_DATABASE_URI = "postgresql://fahiye:strongpassword123@localhost:5432/food_order_db"
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # JWT secret
