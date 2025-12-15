@@ -21,7 +21,7 @@ def create_app():
     CORS(app, supports_credentials=True, origins=[
         "http://localhost:5173",
         "https://munchify-frontend.onrender.com", 
-            "https://phase-4-project-munchify-food-deliv-two.vercel.app"
+        "https://phase-4-project-munchify-food-deliv-two.vercel.app"
 
     ])
 
