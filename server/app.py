@@ -17,15 +17,15 @@ def create_app():
     db.init_app(app)
     Migrate(app, db)
 
-    # TEMPORARY FIX: Allow all origins (use only for debugging!)
-    # This will allow requests from any frontend, including your Vercel deployment
-    CORS(
-        app,
-        origins="*",                    # Allows every origin
-        supports_credentials=True,      # Keep this if you're sending cookies or auth headers later
-        allow_headers="*",              # Allows all headers (Content-Type, Authorization, etc.)
-        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
-    )
+    # UPDATED CORS configuration
+    CORS(app, resources={
+        r"/*": {
+            "origins": "*",
+            "allow_headers": "*",
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+            "supports_credentials": True
+        }
+    })
 
     api = Api(app)
 

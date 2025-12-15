@@ -18,13 +18,14 @@ def create_app():
     Migrate(app, db)
 
     #  CORS: Allow frontend at localhost:5173 with all needed methods
-    CORS(
-        app,
-        origins=["http://localhost:5173"],
-        supports_credentials=True,
-        methods=["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
-        allow_headers=["Content-Type", "Authorization"]
-    )
+    CORS(app, resources={
+        r"/*": {
+            "origins": "*",
+            "allow_headers": "*",
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+            "supports_credentials": True
+        }
+    })
 
     #  Register Blueprints
     app.register_blueprint(auth_bp)
