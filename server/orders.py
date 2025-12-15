@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from server.models import Order
-from server.extensions import db, mail
+from models import Order
+from extensions import db, mail
 from flask_mail import Message
 import datetime
 

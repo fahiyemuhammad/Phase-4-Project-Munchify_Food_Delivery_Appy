@@ -5,7 +5,7 @@ from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
 from email_validator import validate_email, EmailNotValidError
 from sqlalchemy.dialects.postgresql import JSON
-from server.extensions import db, bcrypt
+from extensions import db, bcrypt
 
 
 
