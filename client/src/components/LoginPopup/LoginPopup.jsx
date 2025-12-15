@@ -23,8 +23,8 @@ const LoginPopup = ({ setShowLogin, setIsLoggedIn }) => {
 
     const url =
       currentState === "Login"
-        ? "http://localhost:5000/auth/login"
-        : "http://localhost:5000/auth/register";
+        ? "https://munchify-backend.onrender.com/auth/login"
+        : "https://munchify-backend.onrender.com/auth/register";
 
     const payload =
       currentState === "Login"
