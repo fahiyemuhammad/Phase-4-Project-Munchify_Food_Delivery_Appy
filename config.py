@@ -35,9 +35,19 @@ class Config:
 
     # 🔥 RENDER-SAFE ENGINE CONFIG (THIS IS THE KEY FIX)
     SQLALCHEMY_ENGINE_OPTIONS = {
-        "poolclass": sqlalchemy.pool.NullPool,
-        "connect_args": {"sslmode": "require"},
-    }
+    "pool_pre_ping": True,
+    "pool_recycle": 280,
+    "pool_size": 3,
+    "max_overflow": 2,
+    "connect_args": {
+        "sslmode": "require",
+        "keepalives": 1,
+        "keepalives_idle": 30,
+        "keepalives_interval": 10,
+        "keepalives_count": 5,
+    },
+}
+
 
     # JWT / Security
     JWT_SECRET_KEY = os.getenv(
