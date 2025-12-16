@@ -1,5 +1,5 @@
 import os
-import sqlalchemy  # Needed for NullPool if you enable it
+import sqlalchemy  # Required for NullPool
 
 class Config:
     raw_db_url = os.getenv("DATABASE_URL")
@@ -30,15 +30,13 @@ class Config:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # FIX FOR RENDER POSTGRES: Handle stale/killed connections
+    # FINAL FIX FOR RENDER: Disable connection pooling completely
     SQLALCHEMY_ENGINE_OPTIONS = {
-        "pool_pre_ping": True,      # Test connection before use (discards dead ones)
-        "pool_recycle": 300,        # Recycle connections every 5 minutes
-        "pool_size": 5,             # Small pool (good for low-traffic)
-        "max_overflow": 10,         # Allow temporary extra connections
-        "pool_timeout": 30,         # Wait max 30s for a connection
-        # OPTIONAL TEMP FIX: Disable pooling entirely (100% reliable, minor perf cost)
-        # "poolclass": sqlalchemy.pool.NullPool
+        "poolclass": sqlalchemy.pool.NullPool,  # ← UNCOMMENT THIS LINE
+        # Keep pre_ping as backup (harmless)
+        "pool_pre_ping": True,
+        # Optional: explicit SSL
+        "connect_args": {"sslmode": "require"}
     }
 
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-super-secret-jwt-key-change-in-prod")
