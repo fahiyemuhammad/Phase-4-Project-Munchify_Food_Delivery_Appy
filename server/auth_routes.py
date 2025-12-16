@@ -41,17 +41,32 @@ def register():
         return jsonify(error="Username or email already exists"), 409
 
     except OperationalError as e:
-        # 🔥 THIS IS THE MISSING FIX
-        current_app.logger.warning(
-            f"DB connection lost during register — disposing engine: {e}"
-        )
+     current_app.logger.warning(
+        f"DB connection lost during register — disposing engine: {e}"
+    )
 
+    db.session.rollback()
+    db.engine.dispose()
+
+    # 🔁 ONE SAFE RETRY
+    try:
+        user = User(username=username, email=email)
+        user.password = password
+
+        db.session.add(user)
+        db.session.commit()
+
+        return jsonify(message="User registered successfully"), 201
+
+    except Exception as retry_error:
         db.session.rollback()
-        db.engine.dispose()   # ← kills broken SSL connections
-
+        current_app.logger.error(
+            f"Retry failed after DB dispose: {retry_error}"
+        )
         return jsonify(
-            error="Temporary database issue — please retry"
+            error="Temporary database issue — please try again"
         ), 503
+
 
     except Exception as e:
         db.session.rollback()
@@ -83,7 +98,19 @@ def login():
         return jsonify(error="Invalid email or password"), 401
 
     except OperationalError as e:
+      db.session.rollback()
+      db.engine.dispose()
+      current_app.logger.warning(f"DB lost during login — retrying: {e}")
+  
+    try:
+        user = User.query.filter_by(email=email).first()
+        if user and user.check_password(password):
+            token = create_access_token(identity=user.id)
+            return jsonify(access_token=token, username=user.username), 200
+
+        return jsonify(error="Invalid email or password"), 401
+
+    except Exception as retry_error:
         db.session.rollback()
-        db.engine.dispose()
-        current_app.logger.warning(f"DB lost during login: {e}")
+        current_app.logger.error(f"Login retry failed: {retry_error}")
         return jsonify(error="Temporary database issue"), 503
