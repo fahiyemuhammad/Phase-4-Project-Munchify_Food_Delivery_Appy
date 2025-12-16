@@ -18,121 +18,107 @@ print(f"📦 Files: {os.listdir('.')}")
 
 def create_app():
     app = Flask(__name__)
-    
-    # Load configuration FIRST — Config.py already handles DB URL fixes perfectly
+
+    # Load config FIRST
     app.config.from_object(Config)
-    
-    # Final verification of the database URI
-    final_db_url = app.config.get('SQLALCHEMY_DATABASE_URI')
+
+    # Verify DB config
+    final_db_url = app.config.get("SQLALCHEMY_DATABASE_URI")
     if final_db_url:
         print(f"✅ [FINAL] SQLALCHEMY_DATABASE_URI: {final_db_url[:80]}...")
-        print(f"   → sslmode=require: {'sslmode=require' in str(final_db_url)}")
-        print(f"   → psycopg2 driver: {'psycopg2' in str(final_db_url)}")
+        print(f"   → sslmode=require: {'sslmode=require' in final_db_url}")
+        print(f"   → psycopg2 driver: {'psycopg2' in final_db_url}")
     else:
-        print("❌ [ERROR] SQLALCHEMY_DATABASE_URI is not set!")
+        print("❌ [ERROR] SQLALCHEMY_DATABASE_URI not set")
 
-    # Initialize extensions
+    # Init extensions
     db.init_app(app)
     Migrate(app, db)
-    
-    # CORS — allow all origins (temporary for testing, restrict later)
-    CORS(app, resources={
-        r"/*": {
-            "origins": "*",
-            "allow_headers": "*",
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-            "supports_credentials": True
-        }
-    })
-    
+
+    # 🔥 REQUIRED FOR NULLPOOL (CRITICAL FIX)
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        db.session.remove()
+
+    # CORS (open for now)
+    CORS(
+        app,
+        resources={
+            r"/*": {
+                "origins": "*",
+                "allow_headers": "*",
+                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+                "supports_credentials": True,
+            }
+        },
+    )
+
     api = Api(app)
-    
-    # Register blueprints
+
+    # Blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(orders_bp)
-    
-    # Only create tables in debug/local mode (never auto-create in production)
+
+    # Local-only table checks
     with app.app_context():
-        if app.config.get('DEBUG', False):
-            print("🔧 [DEBUG MODE] Checking/Creating tables...")
+        if app.config.get("DEBUG", False):
+            print("🔧 [DEBUG MODE] Checking tables...")
             try:
                 db.session.execute("SELECT 1 FROM users LIMIT 1")
                 print("✅ Users table exists")
             except Exception as e:
                 print(f"⚠️ Tables missing: {str(e)[:100]}...")
-                print("🔄 Creating all tables...")
+                print("🔄 Creating tables...")
                 try:
                     db.create_all()
-                    print("✅ All tables created")
-                    
-                    # Create test admin if no users
+                    print("✅ Tables created")
+
                     if User.query.count() == 0:
                         admin = User(
                             username="admin",
                             email="admin@example.com",
-                            is_admin=True
+                            is_admin=True,
                         )
-                        admin.password = "admin123"  # Hashed via property
+                        admin.password = "admin123"
                         db.session.add(admin)
                         db.session.commit()
-                        print("👑 Test admin created: admin@example.com / admin123")
-                except Exception as create_error:
-                    print(f"❌ Failed to create tables: {create_error}")
+                        print("👑 Admin created")
+                except Exception as err:
+                    print(f"❌ Failed to create tables: {err}")
         else:
-            print("⚡ [PRODUCTION] Skipping table creation — use Flask-Migrate")
+            print("⚡ [PRODUCTION] Skipping table creation")
 
-    # Health & Debug Endpoints
-    @app.route('/')
+    # Routes
+    @app.route("/")
     def home():
         return {"message": "Munchify Backend API", "status": "running"}, 200
-    
-    @app.route('/health')
+
+    @app.route("/health")
     def health():
         return {"status": "healthy", "service": "munchify-backend"}, 200
-    
-    @app.route('/test-db')
+
+    @app.route("/test-db")
     def test_db():
         try:
             db.session.execute("SELECT 1")
             return {
                 "db_status": "connected",
-                "has_ssl": "sslmode=require" in str(final_db_url),
-                "driver": "psycopg2" if "psycopg2" in str(final_db_url) else "unknown"
+                "ssl": "enabled",
+                "driver": "psycopg2",
             }, 200
         except Exception as e:
             return {
                 "db_status": "error",
                 "error": str(e),
-                "db_url_preview": str(final_db_url)[:100] if final_db_url else "None"
             }, 500
-    
-    @app.route('/db-status')
-    def db_status():
-        try:
-            tables = ['users', 'menu_items', 'orders', 'order_items']
-            status = {}
-            for table in tables:
-                try:
-                    db.session.execute(f"SELECT 1 FROM {table} LIMIT 1")
-                    status[table] = "exists"
-                except:
-                    status[table] = "missing"
-            
-            return {
-                "status": "connected",
-                "tables": status,
-                "user_count": User.query.count()
-            }, 200
-        except Exception as e:
-            return {"status": "error", "error": str(e)}, 500
-    
-    print("🎉 [APP READY] Flask app initialized successfully")
+
+    print("🎉 [APP READY] Flask app initialized")
     return app
 
 app = create_app()
 
 if __name__ == "__main__":
-    print("🌍 [SERVER] Starting development server on http://localhost:5000")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    print("🌍 [DEV] Running on http://localhost:5000")
+    app.run(host="0.0.0.0", port=5000, debug=True)
 else:
-    print("⚡ [PRODUCTION] Running in production mode on Render")
+    print("⚡ [PRODUCTION] Running on Render")
