@@ -1,7 +1,6 @@
 import os
 
 class Config:
-    # Ultimate fix for Render PostgreSQL
     raw_db_url = os.getenv("DATABASE_URL")
     
     if raw_db_url:
@@ -9,7 +8,7 @@ class Config:
         print(f"🚨 [CONFIG] DATABASE_URL found")
         print(f"📦 Raw URL (first 80 chars): {raw_db_url[:80]}...")
         
-        # Strip existing query params if any
+        # Strip existing query params
         if "?" in raw_db_url:
             base = raw_db_url.split("?")[0]
         else:
@@ -19,24 +18,28 @@ class Config:
         if base.startswith("postgresql://"):
             base = base.replace("postgresql://", "postgresql+psycopg2://", 1)
         
-        # Always require SSL
+        # Require SSL
         SQLALCHEMY_DATABASE_URI = f"{base}?sslmode=require"
         
         print(f"✅ [CONFIG] Final DB URL: {SQLALCHEMY_DATABASE_URI[:80]}...")
         print("=" * 50)
     else:
-        # Local fallback
         SQLALCHEMY_DATABASE_URI = "postgresql://fahiye:strongpassword123@localhost:5432/food_order_db"
-        print("⚠️ [CONFIG] Using local DB — no DATABASE_URL in env")
+        print("⚠️ [CONFIG] Using local DB")
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # CRITICAL FIX FOR RENDER
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_pre_ping": True,   # Tests connections before use (catches dead ones)
+        "pool_recycle": 300,     # Recycles connections every 5 minutes (prevents stale)
+    }
+
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-super-secret-jwt-key-change-in-prod")
     CORS_SUPPORTS_CREDENTIALS = True
-    
-    # Better: Use env var in production
     DEBUG = os.getenv("FLASK_DEBUG", "False") == "True"
-    
-    # Mail (optional)
+
+    # Mail config...
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
