@@ -1,9 +1,8 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app  # ← Use current_app
 from models import User
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db
-from app import app  # Import app for logging (or use current_app)
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -29,16 +28,16 @@ def register():
         return jsonify(error="Username or email already exists"), 409
     except OperationalError as e:
         db.session.rollback()
-        app.logger.warning(f"DB connection lost during register (will recover): {str(e)}")
+        current_app.logger.warning(f"DB connection lost during register (will recover): {str(e)}")
         return jsonify(error="Temporary database issue — please try again"), 503
     except ValueError as e:
         return jsonify(error=str(e)), 400
     except Exception as e:
         db.session.rollback()
-        app.logger.error(f"Unexpected error in register: {str(e)}")
+        current_app.logger.error(f"Unexpected error in register: {str(e)}")
         return jsonify(error="Server error"), 500
 
-# ---------------- LOGIN ---------------- (unchanged, read-only — safe)
+# ---------------- LOGIN ----------------
 @auth_bp.route('/login', methods=['POST', 'OPTIONS'])
 def login():
     if request.method == 'OPTIONS':
@@ -54,7 +53,7 @@ def login():
         return jsonify(access_token=access_token, username=user.username), 200
     return jsonify(error="Invalid email or password"), 401
 
-# ---------------- GET CURRENT USER INFO ---------------- (unchanged)
+# ---------------- GET CURRENT USER INFO ----------------
 @auth_bp.route('/me', methods=['GET'])
 @jwt_required()
 def get_current_user():
@@ -102,14 +101,14 @@ def update_user():
         return jsonify(error="Username already taken"), 409
     except OperationalError as e:
         db.session.rollback()
-        app.logger.warning(f"DB connection lost during update (will recover): {str(e)}")
+        current_app.logger.warning(f"DB connection lost during update (will recover): {str(e)}")
         return jsonify(error="Temporary database issue — please try again"), 503
     except ValueError as e:
         db.session.rollback()
         return jsonify(error=str(e)), 400
     except Exception as e:
         db.session.rollback()
-        app.logger.error(f"Unexpected error in update: {str(e)}")
+        current_app.logger.error(f"Unexpected error in update: {str(e)}")
         return jsonify(error="Server error"), 500
 
 # ---------------- DELETE CURRENT USER ----------------
@@ -128,9 +127,9 @@ def delete_user():
         return jsonify(message="User deleted successfully"), 200
     except OperationalError as e:
         db.session.rollback()
-        app.logger.warning(f"DB connection lost during delete (will recover): {str(e)}")
+        current_app.logger.warning(f"DB connection lost during delete (will recover): {str(e)}")
         return jsonify(error="Temporary database issue — please try again"), 503
     except Exception as e:
         db.session.rollback()
-        app.logger.error(f"Unexpected error in delete: {str(e)}")
+        current_app.logger.error(f"Unexpected error in delete: {str(e)}")
         return jsonify(error="Server error"), 500
