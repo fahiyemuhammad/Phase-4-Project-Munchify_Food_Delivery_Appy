@@ -2,14 +2,15 @@ services:
   - type: web
     name: munchify-backend
     env: python
-    plan: free
-    region: oregon
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn app:app"
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
     envVars:
-      - key: FLASK_ENV
-        value: production
-      - key: MAIL_USERNAME
-        value: munchifyorg@gmail.com
-      - key: MAIL_PASSWORD
-        value: mqxp iaog xhql ksej
+      - key: DATABASE_URL
+        fromDatabase:
+          name: food_order_db
+          property: connectionString
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.13.0
+    autoDeploy: true

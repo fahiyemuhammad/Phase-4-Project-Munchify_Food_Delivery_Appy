@@ -1,35 +1,45 @@
 import os
 
 class Config:
-    # NUCLEAR OPTION: Hardcoded SSL fix for Render
+    # ULTIMATE FIX FOR RENDER POSTGRESQL SSL
     # Get DATABASE_URL from environment
-    raw_url = os.getenv("DATABASE_URL")
+    raw_db_url = os.getenv("DATABASE_URL")
     
-    if raw_url:
-        # Step 1: Print what we got
-        print(f"🚀 RAW DATABASE_URL: {raw_url}")
+    if raw_db_url:
+        # DEBUG: Show what we received
+        print("=" * 50)
+        print(f"🚨 [CONFIG] DATABASE_URL found from environment")
+        print(f"📦 Raw URL (first 80 chars): {raw_db_url[:80]}...")
         
-        # Step 2: FORCE sslmode=require NO MATTER WHAT
+        # FORCE SSL MODE - THIS IS THE FIX
         # Remove any existing query parameters
-        base_url = raw_url.split('?')[0] if '?' in raw_url else raw_url
+        if "?" in raw_db_url:
+            base = raw_db_url.split("?")[0]
+            print(f"🔧 Stripped existing query params")
+        else:
+            base = raw_db_url
         
-        # Step 3: Use psycopg2 driver
-        if base_url.startswith("postgresql://"):
-            base_url = base_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+        # Force psycopg2 driver
+        if base.startswith("postgresql://"):
+            base = base.replace("postgresql://", "postgresql+psycopg2://", 1)
+            print(f"🔧 Changed to psycopg2 driver")
         
-        # Step 4: ALWAYS add sslmode=require
-        SQLALCHEMY_DATABASE_URI = f"{base_url}?sslmode=require"
+        # ALWAYS add sslmode=require (Render PostgreSQL REQUIRES this)
+        SQLALCHEMY_DATABASE_URI = f"{base}?sslmode=require"
         
-        print(f"🎯 FORCED DATABASE_URL: {SQLALCHEMY_DATABASE_URI}")
+        print(f"✅ [CONFIG] Final database URL: {SQLALCHEMY_DATABASE_URI[:80]}...")
+        print("=" * 50)
     else:
-        # Local development
+        # Local development fallback
         SQLALCHEMY_DATABASE_URI = "postgresql://fahiye:strongpassword123@localhost:5432/food_order_db"
-        print("🏠 Using local database")
+        print("⚠️  [CONFIG] Using local database - DATABASE_URL not found in environment")
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key")
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-super-secret-jwt-key-change-this-in-production")
     CORS_SUPPORTS_CREDENTIALS = True
-    DEBUG = True
+    DEBUG = True  # Set to False in production
+    
+    # Mail configuration (optional)
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
