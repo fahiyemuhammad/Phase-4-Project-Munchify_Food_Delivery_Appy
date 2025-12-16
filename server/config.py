@@ -1,5 +1,4 @@
 import os
-import sqlalchemy
 
 class Config:
     raw_db_url = os.getenv("DATABASE_URL")
@@ -33,32 +32,20 @@ class Config:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # 🔥 RENDER-SAFE ENGINE CONFIG (THIS IS THE KEY FIX)
+    # 🔥 RENDER-SAFE ENGINE CONFIG (IMPORTANT)
     SQLALCHEMY_ENGINE_OPTIONS = {
-    "pool_pre_ping": True,
-    "pool_recycle": 280,
-    "pool_size": 3,
-    "max_overflow": 2,
-    "connect_args": {
-        "sslmode": "require",
-        "keepalives": 1,
-        "keepalives_idle": 30,
-        "keepalives_interval": 10,
-        "keepalives_count": 5,
-    },
-}
+        "pool_pre_ping": True,
+        "pool_recycle": 300,
+        "pool_size": 5,
+        "max_overflow": 10,
+    }
 
-
-    # JWT / Security
     JWT_SECRET_KEY = os.getenv(
         "JWT_SECRET_KEY",
         "your-super-secret-jwt-key-change-in-prod"
     )
 
-    # CORS
     CORS_SUPPORTS_CREDENTIALS = True
-
-    # Debug
     DEBUG = os.getenv("FLASK_DEBUG", "False") == "True"
 
     # Mail (optional)
