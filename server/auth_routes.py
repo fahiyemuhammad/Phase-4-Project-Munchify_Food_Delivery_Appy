@@ -1,8 +1,9 @@
 from flask import Blueprint, request, jsonify
-from models import  User
+from models import User
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db
+from app import app  # Import app for logging (or use current_app)
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -10,7 +11,7 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 @auth_bp.route('/register', methods=['POST', 'OPTIONS'])
 def register():
     if request.method == 'OPTIONS':
-        return '', 200  #  Preflight CORS support
+        return '', 200
 
     data = request.get_json()
     username = data.get('username')
@@ -19,21 +20,29 @@ def register():
 
     try:
         new_user = User(username=username, email=email)
-        new_user.password = password  # triggers password validation + hashing
+        new_user.password = password  # triggers validation + hashing
         db.session.add(new_user)
         db.session.commit()
         return jsonify(message="User registered successfully"), 201
     except IntegrityError:
         db.session.rollback()
         return jsonify(error="Username or email already exists"), 409
+    except OperationalError as e:
+        db.session.rollback()
+        app.logger.warning(f"DB connection lost during register (will recover): {str(e)}")
+        return jsonify(error="Temporary database issue — please try again"), 503
     except ValueError as e:
         return jsonify(error=str(e)), 400
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Unexpected error in register: {str(e)}")
+        return jsonify(error="Server error"), 500
 
-# ---------------- LOGIN ----------------
+# ---------------- LOGIN ---------------- (unchanged, read-only — safe)
 @auth_bp.route('/login', methods=['POST', 'OPTIONS'])
 def login():
     if request.method == 'OPTIONS':
-        return '', 200  #  Preflight CORS support
+        return '', 200
 
     data = request.get_json()
     email = data.get('email')
@@ -45,7 +54,7 @@ def login():
         return jsonify(access_token=access_token, username=user.username), 200
     return jsonify(error="Invalid email or password"), 401
 
-# ---------------- GET CURRENT USER INFO ----------------
+# ---------------- GET CURRENT USER INFO ---------------- (unchanged)
 @auth_bp.route('/me', methods=['GET'])
 @jwt_required()
 def get_current_user():
@@ -66,7 +75,7 @@ def get_current_user():
 @jwt_required()
 def update_user():
     if request.method == 'OPTIONS':
-        return '', 200  #  Preflight CORS support for PATCH
+        return '', 200
 
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
@@ -83,7 +92,7 @@ def update_user():
             user.username = data["username"]
 
         if "password" in data and data["password"].strip():
-            user.password = data["password"]  # triggers validation + hashing
+            user.password = data["password"]
 
         db.session.commit()
         return jsonify(message="User updated successfully"), 200
@@ -91,14 +100,18 @@ def update_user():
     except IntegrityError:
         db.session.rollback()
         return jsonify(error="Username already taken"), 409
+    except OperationalError as e:
+        db.session.rollback()
+        app.logger.warning(f"DB connection lost during update (will recover): {str(e)}")
+        return jsonify(error="Temporary database issue — please try again"), 503
     except ValueError as e:
         db.session.rollback()
         return jsonify(error=str(e)), 400
     except Exception as e:
         db.session.rollback()
-        return jsonify(error=str(e)), 500
+        app.logger.error(f"Unexpected error in update: {str(e)}")
+        return jsonify(error="Server error"), 500
 
-    
 # ---------------- DELETE CURRENT USER ----------------
 @auth_bp.route('/delete', methods=['DELETE'])
 @jwt_required()
@@ -113,7 +126,11 @@ def delete_user():
         db.session.delete(user)
         db.session.commit()
         return jsonify(message="User deleted successfully"), 200
+    except OperationalError as e:
+        db.session.rollback()
+        app.logger.warning(f"DB connection lost during delete (will recover): {str(e)}")
+        return jsonify(error="Temporary database issue — please try again"), 503
     except Exception as e:
         db.session.rollback()
-        return jsonify(error=str(e)), 500
-
+        app.logger.error(f"Unexpected error in delete: {str(e)}")
+        return jsonify(error="Server error"), 500
